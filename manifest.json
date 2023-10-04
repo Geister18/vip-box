@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Vip box covering",
-    "version": "1.1",
+    "version": "1.2",
     "description": "Ajout de checkbox suivit client pour vince",
     "permissions": [
         "activeTab"
