@@ -50,8 +50,14 @@ function run() {
                 // Charger l'état du commentaire depuis localStorage
                 textarea.value = commentState[id] || '';
 
+                // Créez une div pour contenir la checkbox et le textarea
+                const containerDiv = document.createElement('div');
+
                 element.appendChild(checkbox);
-                element.appendChild(textarea);
+                containerDiv.appendChild(textarea);
+
+                // Insérez la div avant la balise h3
+                element.insertAdjacentElement('beforebegin', containerDiv);
 
                 checkbox.addEventListener('click', function (e) {
                     // Empêchez la propagation de l'événement de clic de la checkbox
