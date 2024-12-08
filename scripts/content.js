@@ -8,94 +8,182 @@ function run() {
     setTimeout(function () {
         const h3Elements = document.querySelectorAll('h3.ui-accordion-header');
 
-        const span_counter = document.createElement('span');
-
-        // Chargez l'état actuel des checkboxes depuis localStorage
+        // Chargez l'état actuel des checkboxes et des commentaires depuis localStorage
         const checkboxState = JSON.parse(localStorage.getItem('checkboxState')) || {};
         const commentState = JSON.parse(localStorage.getItem('commentState')) || {};
 
-        let count_checked = 0;
-        let count_not_checked = 0;
-
-        // Parcourez les balises <h3> et appliquez une action à chacune d'elles
         h3Elements.forEach((element) => {
-            // Récupérez le texte à l'intérieur de la balise <h3>
+            // Extraire l'ID à partir du texte
             const texteDansH3 = element.textContent;
-
-            // Utilisez une expression régulière pour extraire l'ID
             const idMatch = texteDansH3.match(/ID (\d+)/);
 
             if (idMatch) {
-                // L'ID a été trouvé dans le texte, récupérez-le
                 const id = idMatch[1];
 
-                // Créez une checkbox pour chaque balise <h3> avec l'ID comme id
+                // Identifier la div associée pour extraire les données
+                const parentDiv = element.nextElementSibling;
+                const leftColumn = parentDiv.querySelector('td:first-child'); // Colonne gauche du tableau
+                const email = leftColumn.querySelector('div:nth-of-type(3)').textContent.trim(); // Email
+                const prestationDiv = Array.from(leftColumn.querySelectorAll('div')).find(div => div.textContent.includes("Nature de la prestation"));
+                const prestation = prestationDiv ? prestationDiv.textContent.split(':')[1].trim() : ''; // Extraire uniquement la valeur après ":"
+
+                // Créer une checkbox
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.id = `checkbox-${id}`;
+                checkbox.checked = !!checkboxState[id];
 
-                // Chargez l'état de la checkbox depuis localStorage
-                if (checkboxState[id]) {
-                    checkbox.checked = true;
-                    count_checked++
-                } else {
-                    checkbox.checked = false;
-                }
-                count_not_checked++
-
-                const textarea = document.createElement('textarea'); // Ajout du textarea
+                // Créer un textarea
+                const textarea = document.createElement('textarea');
                 textarea.id = `textarea-${id}`;
                 textarea.placeholder = 'Ajouter un commentaire...';
-
-                // Charger l'état du commentaire depuis localStorage
                 textarea.value = commentState[id] || '';
+                textarea.style.height = '1rem';
 
-                // Créez une div pour contenir la checkbox et le textarea
-                const containerDiv = document.createElement('div');
+                // Créer un div pour l'email
+                const emailDiv = document.createElement('div');
+                emailDiv.textContent = email;
+                emailDiv.style.marginLeft = '1rem';
 
-                element.appendChild(checkbox);
-                containerDiv.appendChild(textarea);
+                // Créer un div pour la nature de la prestation (seulement la valeur)
+                const natureDiv = document.createElement('div');
+                natureDiv.textContent = prestation;
+                natureDiv.style.marginLeft = '1rem';
+                natureDiv.style.backgroundColor = '#fff';
+                natureDiv.style.padding = '0.5rem';
 
-                // Insérez la div avant la balise h3
-                element.insertAdjacentElement('beforebegin', containerDiv);
+                // Ajuster les styles du h3 pour contenir les éléments
+                element.style.display = 'flex';
+                element.style.alignItems = 'center';
+                element.style.justifyContent = 'space-between';
+                element.style.flexWrap = 'wrap';
 
+                // Ajouter les éléments au h3
+                const wrapper = document.createElement('div');
+                wrapper.style.display = 'flex';
+                wrapper.style.alignItems = 'center';
+                wrapper.style.gap = '1rem';
+
+                wrapper.appendChild(checkbox);
+                wrapper.appendChild(document.createElement('span')).textContent = element.textContent.trim();
+                wrapper.appendChild(textarea);
+                wrapper.appendChild(emailDiv);
+                wrapper.appendChild(natureDiv);
+
+                // Nettoyer le contenu actuel du h3 et y injecter les éléments
+                element.innerHTML = '';
+                element.appendChild(wrapper);
+
+                // Ajouter les événements pour la gestion des états
                 checkbox.addEventListener('click', function (e) {
-                    // Empêchez la propagation de l'événement de clic de la checkbox
                     e.stopPropagation();
-
-                    // Mettez à jour l'état de la checkbox
                     checkboxState[id] = checkbox.checked;
-
-                    // Sauvegardez l'état mis à jour des checkboxes dans localStorage
                     localStorage.setItem('checkboxState', JSON.stringify(checkboxState));
-
-                    if (this.checked) {
-                        console.log(`checkbox-${id} checked`);
-                    } else {
-                        console.log(`checkbox-${id} not checked`);
-                    }
                 });
 
-                textarea.addEventListener('click', function (e) {
-                    // Empêchez la propagation de l'événement de clic de la checkbox
-                    e.stopPropagation();
-                });
-
+                textarea.addEventListener('click', (e) => e.stopPropagation());
                 textarea.addEventListener('input', function () {
-                    commentState[id] = textarea.value; // Enregistrer le commentaire
+                    commentState[id] = textarea.value;
                     localStorage.setItem('commentState', JSON.stringify(commentState));
                 });
             }
         });
-
-        let contacte = "contacté";
-        if (count_checked > 1) {
-            contacte = "contactés"
-        }
-        span_counter.innerHTML = `dont ${count_checked} ${contacte}`;
-
-        document.querySelector('#affichage_presta > div').appendChild(span_counter)
-    }, 2000);
+    }, 300);
 }
 
-run()
+function addFilter() {
+    setTimeout(function () {
+        const filterDiv = document.createElement('div');
+        filterDiv.id = 'filter-container';
+        filterDiv.style.marginTop = '1rem';
+        filterDiv.style.display = 'flex';
+        filterDiv.style.gap = '1rem';
+        filterDiv.style.alignItems = 'center';
+        filterDiv.style.justifyContent = 'center';
+
+        // Créer les deux checkboxes de filtre
+        const checkedFilter = document.createElement('input');
+        checkedFilter.type = 'checkbox';
+        checkedFilter.id = 'filter-checked';
+
+        const uncheckedFilter = document.createElement('input');
+        uncheckedFilter.type = 'checkbox';
+        uncheckedFilter.id = 'filter-unchecked';
+
+        // Ajouter des labels pour les checkboxes
+        const checkedLabel = document.createElement('label');
+        checkedLabel.htmlFor = 'filter-checked';
+
+        const uncheckedLabel = document.createElement('label');
+        uncheckedLabel.htmlFor = 'filter-unchecked';
+
+        // Ajouter les éléments au filtre
+        filterDiv.appendChild(checkedFilter);
+        filterDiv.appendChild(checkedLabel);
+        filterDiv.appendChild(uncheckedFilter);
+        filterDiv.appendChild(uncheckedLabel);
+
+        // Insérer la div filtre après le premier enfant de la div "affichage_presta"
+        const affichagePrestaDiv = document.querySelector('#affichage_presta');
+        if (affichagePrestaDiv && affichagePrestaDiv.firstElementChild) {
+            affichagePrestaDiv.firstElementChild.insertAdjacentElement('afterend', filterDiv);
+        }
+
+        // Fonction pour calculer le nombre de contacts (cochés et non cochés)
+        function updateFilterLabels() {
+            const h3Elements = document.querySelectorAll('.accordion_date');
+
+            let checkedCount = 0;
+            let uncheckedCount = 0;
+
+            h3Elements.forEach((accordion) => {
+                const checkbox = accordion.querySelector('input[type="checkbox"]');
+                if (checkbox) {
+                    if (checkbox.checked) {
+                        checkedCount++;
+                    } else {
+                        uncheckedCount++;
+                    }
+                }
+            });
+
+            // Mettre à jour les labels
+            checkedLabel.textContent = `${checkedCount} contactés`;
+            uncheckedLabel.textContent = `${uncheckedCount} non contactés`;
+        }
+
+        // Appliquer le filtre et afficher les éléments en fonction de l'état des checkboxes
+        function applyFilter() {
+            const showChecked = checkedFilter.checked;
+            const showUnchecked = uncheckedFilter.checked;
+
+            const accordionDates = document.querySelectorAll('.accordion_date');
+            accordionDates.forEach((accordion) => {
+                const hasChecked = accordion.querySelector('input[type="checkbox"]:checked');
+                const hasUnchecked = accordion.querySelector('input[type="checkbox"]:not(:checked)');
+
+                // Vérifier si on doit afficher l'accordion_date
+                if (
+                    (showChecked && hasChecked) ||
+                    (showUnchecked && hasUnchecked) ||
+                    (!showChecked && !showUnchecked) // Si aucun filtre actif, afficher tout
+                ) {
+                    accordion.style.display = '';
+                } else {
+                    accordion.style.display = 'none';
+                }
+            });
+        }
+
+        // Écouter les changements des checkboxes de filtre
+        checkedFilter.addEventListener('change', applyFilter);
+        uncheckedFilter.addEventListener('change', applyFilter);
+
+        // Initialiser les labels au chargement de la page
+        updateFilterLabels();
+    }, 400);
+}
+
+// Ajouter les filtres après avoir généré les contenus
+run();
+addFilter();
