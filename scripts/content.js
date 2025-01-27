@@ -1,7 +1,8 @@
 // Attendre 2 secondes (2000 millisecondes) avant d'exécuter le code
 const bouton_lancer_recherche = document.querySelector('#date_button');
 bouton_lancer_recherche.addEventListener('click', function () {
-    run()
+    run();
+    addFilter();
 })
 
 function run() {
@@ -88,7 +89,7 @@ function run() {
                 });
             }
         });
-    }, 300);
+    }, 500);
 }
 
 function addFilter() {
@@ -181,7 +182,7 @@ function addFilter() {
 
         // Initialiser les labels au chargement de la page
         updateFilterLabels();
-    }, 400);
+    }, 600);
 }
 
 // Ajouter les filtres après avoir généré les contenus
