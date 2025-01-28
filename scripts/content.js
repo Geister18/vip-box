@@ -89,7 +89,7 @@ function run() {
                 });
             }
         });
-    }, 500);
+    }, 1000);
 }
 
 function addFilter() {
@@ -132,7 +132,7 @@ function addFilter() {
 
         // Fonction pour calculer le nombre de contacts (cochés et non cochés)
         function updateFilterLabels() {
-            const h3Elements = document.querySelectorAll('.accordion_date');
+            const h3Elements = document.querySelectorAll('.accordion_presta');
 
             let checkedCount = 0;
             let uncheckedCount = 0;
@@ -158,7 +158,7 @@ function addFilter() {
             const showChecked = checkedFilter.checked;
             const showUnchecked = uncheckedFilter.checked;
 
-            const accordionDates = document.querySelectorAll('.accordion_date');
+            const accordionDates = document.querySelectorAll('.accordion_presta');
             accordionDates.forEach((accordion) => {
                 const hasChecked = accordion.querySelector('input[type="checkbox"]:checked');
                 const hasUnchecked = accordion.querySelector('input[type="checkbox"]:not(:checked)');
@@ -182,7 +182,7 @@ function addFilter() {
 
         // Initialiser les labels au chargement de la page
         updateFilterLabels();
-    }, 600);
+    }, 1100);
 }
 
 // Ajouter les filtres après avoir généré les contenus
