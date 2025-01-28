@@ -89,7 +89,7 @@ function run() {
                 });
             }
         });
-    }, 1000);
+    }, 2000);
 }
 
 function addFilter() {
@@ -182,7 +182,7 @@ function addFilter() {
 
         // Initialiser les labels au chargement de la page
         updateFilterLabels();
-    }, 1100);
+    }, 2100);
 }
 
 // Ajouter les filtres après avoir généré les contenus
